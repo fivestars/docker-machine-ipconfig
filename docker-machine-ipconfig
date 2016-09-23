@@ -11,6 +11,7 @@
 #
 #  hosts                          Update /etc/hosts file
 
+set -e
 operation=${1}
 shift
 
@@ -69,16 +70,16 @@ ifconfig eth1 $ip netmask 255.255.255.0 broadcast $broadcast up
 EOF
 
         # Set the bootsync.sh file as executable
-        docker-machine ssh $machine sudo chmod u+x /var/lib/boot2docker/bootsync.sh
+        docker-machine ssh $machine "sudo chmod u+x /var/lib/boot2docker/bootsync.sh"
 
         # Go ahead and run the script to switch to static ip mode
-        docker-machine ssh $machine sudo /var/lib/boot2docker/bootsync.sh
+        docker-machine ssh $machine "sudo /var/lib/boot2docker/bootsync.sh"
 
         # Regenerate the docker-machine certs
         docker-machine regenerate-certs -f $machine
 
         # Status report
-        docker-machine ssh $machine ip addr show eth1 | grep "inet.*eth1"
+        docker-machine ssh $machine "ip addr show eth1 | grep 'inet.*eth1'"
         printf "docker-machine \"%s\" now has a static ip address\n" $machine
         ;;
 
@@ -87,8 +88,8 @@ EOF
         machine=$1
 
         # Delete the config file and bring the interface down
-        docker-machine ssh $machine sudo rm -f /var/lib/boot2docker/bootsync.sh
-        docker-machine ssh $machine sudo ifconfig eth1 down
+        docker-machine ssh $machine "sudo rm -f /var/lib/boot2docker/bootsync.sh"
+        docker-machine ssh $machine "sudo ifconfig eth1 down"
 
         # Start up the DHPC client again
         docker-machine ssh $machine "sudo /sbin/udhcpc -b -i eth1 -x hostname boot2docker -p /var/run/udhcpc.eth1.pid &"
