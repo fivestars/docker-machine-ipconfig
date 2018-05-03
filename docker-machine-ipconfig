@@ -12,8 +12,10 @@
 #  hosts                          Update /etc/hosts file
 
 set -e
-operation=${1}
-shift
+if [[ $# -ge 1 ]]; then
+    operation=${1}
+    shift
+fi
 
 case $(uname -v) in
     *Microsoft*)
